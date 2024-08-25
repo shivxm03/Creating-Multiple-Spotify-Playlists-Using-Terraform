@@ -16,6 +16,17 @@ Featured interview - https://www.hashicorp.com/blog/build-your-summer-spotify-pl
 > If you are having trouble with the provider, try updating to the latest version
 > before submitting a bug report
 
+## Prerequisites
+
+Before you begin, make sure you have the following:
+
+- **Terraform Installed**: [Terraform Installation Guide](https://developer.hashicorp.com/terraform/downloads)
+- **Docker Installed**: [Docker Installation Guide](https://docs.docker.com/get-docker/)
+- **Spotify Account**: You need a Spotify account (premium is not required).
+- **Spotify Developer Account**: Register and create an application to obtain your Client ID and Client Secret.
+- **Spotify Provider for Terraform**: Install and configure the Spotify provider for Terraform.
+- **VS Code Editor**: Recommended for editing Terraform files.
+
 ## Example
 
 ```tf
@@ -50,73 +61,74 @@ output "test" {
 }
 ```
 
-
-## Installation
-
-Add the following to your terraform configuration
+## 1. Create a file named `provider.tf` to configure the Spotify provider and define your Terraform configuration.
 
 ```tf
 terraform {
   required_providers {
     spotify = {
       source  = "conradludgate/spotify"
-      version = "~> 0.2.0"
+      version = "~> 0.2.7"
     }
   }
 }
 ```
 
-## How to use
-
-First, you need an instance of a spotify oauth2 server running. This acts as a middleware between terraform and spotify to allow easy access to access tokens.
-
-### Public proxy
-
-For a simple way to manage your spotify oauth2 tokens is to use https://oauth2.conrad.cafe. ([source code](https://github.com/conradludgate/oauth2-proxy))
-
-Register a new account, create a spotify token with the following scopes
-
-* user-read-email
-* user-read-private
-* playlist-read-private
-* playlist-modify-private
-* playlist-modify-public
-* user-library-read
-* user-library-modify
-
-Then take note of the token id in the URL and the API key that is shown on the page
-
-Configure the terraform provider like so
-
-```tf
+```hcl
 provider "spotify" {
-  auth_server = "https://oauth2.conrad.cafe"
-  api_key = var.spotify_api_key
-  username = "your username"
-  token_id = "your token id"
-}
-
-variable "spotify_api_key" {
-  type = string
+  api_key = "?"
 }
 ```
+## 2. Get Your Spotify API Key
+To interact with the Spotify API, you'll need to create an application in the Spotify Developer Dashboard:
 
-### Self hosted
+Log in to the Spotify Developer Dashboard.
 
-If you want a bit more control over your tokens, you can self host a simple instance of the oauth2 proxy designed specifically for this terraform provider
+Click on "Create an App".
 
-See [spotify_auth_proxy](/spotify_auth_proxy) to get started.
+Fill in the required details and create the app.
 
-Once you have the server running, make note of the API Key it gives you.
+* **Name:** My Playlist through Terraform
+* **Description:** Create multiple Spotify playlists using Terraform.
+* **Redirect URIs:** http://localhost:27228/spotify_callback
 
-Configure the terraform provider like so
+![Screenshot 2024-08-25 193045](https://github.com/user-attachments/assets/e24a0e8d-417b-4832-b609-76c4621467ea)
 
-```tf
-variable "spotify_api_key" {
-  type = string
-}
+## 3. After creating the app, navigate to the "Settings" tab and note down the Client ID and Client Secret.
 
-provider "spotify" {
-  api_key = var.spotify_api_key
-}
+## 4. Store Your Credentials
+
+Create a file named .env in the project directory to store your Spotify application's Client ID and Secret:
+
 ```
+SPOTIFY_CLIENT_ID=<your_spotify_client_id>
+SPOTIFY_CLIENT_SECRET=<your_spotify_client_secret>
+```
+![Screenshot 2024-08-23 215017](https://github.com/user-attachments/assets/8e8f4652-a4bd-471d-b0e7-fefb59b1758e)
+
+## 5. Run the Spotify Auth Proxy
+Make sure Docker Desktop is running, and start the authorization proxy server:
+
+```
+docker run --rm -it -p 27228:27228 --env-file ./.env ghcr.io/conradludgate/spotify-auth-proxy
+```
+This will start the authorization process. Once you receive the "Authorization Successful" message, you can continue with the Terraform setup.
+
+## 6. Initialize and Apply Terraform Configuration
+**Initialize the Terraform configuration:**
+
+```
+terraform init
+```
+**Apply the Terraform configuration:**
+
+```
+terraform apply
+```
+## 7. Verify Playlists on Spotify
+
+After applying the Terraform configuration, log in to your Spotify account and verify that the playlists have been created and populated with the specified tracks.
+
+![Screenshot 2024-08-24 003917](https://github.com/user-attachments/assets/f05708df-01b2-45ce-9293-df7ad4916895)
+
+![Screenshot 2024-08-24 005140](https://github.com/user-attachments/assets/bba26f8f-3134-4cd6-abc6-c6b0ef109dba)
