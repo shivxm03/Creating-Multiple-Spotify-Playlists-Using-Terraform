@@ -104,7 +104,7 @@ Create a file named .env in the project directory to store your Spotify applicat
 SPOTIFY_CLIENT_ID=<your_spotify_client_id>
 SPOTIFY_CLIENT_SECRET=<your_spotify_client_secret>
 ```
-![Screenshot 2024-08-23 215017](https://github.com/user-attachments/assets/8e8f4652-a4bd-471d-b0e7-fefb59b1758e)
+![Screenshot 2024-08-23 215017](https://github.com/user-attachments/assets/ce4a2004-f638-451b-8855-cdb0729671a5)
 
 ## 5. Run the Spotify Auth Proxy
 Make sure Docker Desktop is running, and start the authorization proxy server:
@@ -113,6 +113,8 @@ Make sure Docker Desktop is running, and start the authorization proxy server:
 docker run --rm -it -p 27228:27228 --env-file ./.env ghcr.io/conradludgate/spotify-auth-proxy
 ```
 This will start the authorization process. Once you receive the "Authorization Successful" message, you can continue with the Terraform setup.
+
+![Screenshot 2024-08-24 001054](https://github.com/user-attachments/assets/4af8eda6-ce51-4d9d-9c71-7cec42b32931)
 
 ## 6. Initialize and Apply Terraform Configuration
 **Initialize the Terraform configuration:**
